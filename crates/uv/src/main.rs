@@ -379,6 +379,7 @@ async fn run() -> Result<ExitStatus> {
                 args.shared.system,
                 args.shared.break_system_packages,
                 args.shared.target,
+                args.shared.prefix,
                 args.shared.concurrency,
                 globals.native_tls,
                 globals.preview,

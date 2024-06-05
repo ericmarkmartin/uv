@@ -1,5 +1,6 @@
 use std::borrow::Cow;
 use std::fmt::Write;
+use std::path::PathBuf;
 
 use anstream::eprint;
 use itertools::Itertools;
@@ -68,6 +69,7 @@ pub(crate) async fn pip_install(
     system: bool,
     break_system_packages: bool,
     target: Option<Target>,
+    prefix: Option<PathBuf>,
     concurrency: Concurrency,
     native_tls: bool,
     preview: PreviewMode,
@@ -129,7 +131,7 @@ pub(crate) async fn pip_install(
         venv.python_executable().user_display().cyan()
     );
 
-    // Apply any `--target` directory.
+    // Apply any `--target` or `--prefix` directory.
     let venv = if let Some(target) = target {
         debug!(
             "Using `--target` directory at {}",
@@ -137,6 +139,10 @@ pub(crate) async fn pip_install(
         );
         target.init()?;
         venv.with_target(target)
+    } else if let Some(prefix) = prefix {
+        // `target` and `prefix` conflict so we can only have one or the other
+        debug!("Using `--prefix` directory at {}", prefix.user_display());
+        venv.with_prefix(prefix)
     } else {
         venv
     };

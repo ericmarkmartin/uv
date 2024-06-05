@@ -157,6 +157,17 @@ impl PythonEnvironment {
         }))
     }
 
+    /// Create a [`PythonEnvironment`] from an existing [`Interpreter`] and `--prefix` directory.
+    #[must_use]
+    pub fn with_prefix(self, prefix: PathBuf) -> Self {
+        let inner = Arc::unwrap_or_clone(self.0);
+        Self(Arc::new(PythonEnvironmentShared {
+            interpreter: inner.interpreter.with_prefix(prefix.clone()),
+            root: prefix,
+            ..inner
+        }))
+    }
+
     /// Returns the root (i.e., `prefix`) of the Python interpreter.
     pub fn root(&self) -> &Path {
         &self.0.root

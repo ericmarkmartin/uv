@@ -1091,6 +1091,10 @@ pub(crate) struct PipInstallArgs {
     #[arg(long)]
     pub(crate) target: Option<PathBuf>,
 
+    /// Install packages relative to the specified prefix. The prefix is where `lib`, `bin`, and other top-level folders live.
+    #[arg(long, conflicts_with("target"))]
+    pub(crate) prefix: Option<PathBuf>,
+
     /// Use legacy `setuptools` behavior when building source distributions without a
     /// `pyproject.toml`.
     #[arg(long, overrides_with("no_legacy_setup_py"))]

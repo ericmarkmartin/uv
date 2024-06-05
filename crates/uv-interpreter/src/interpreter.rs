@@ -128,6 +128,43 @@ impl Interpreter {
         }
     }
 
+    /// Return a new [`Interpreter`] with the given `--prefix` directory.
+    #[must_use]
+    pub fn with_prefix(self, prefix: PathBuf) -> Self {
+        // https://docs.python.org/3/library/sysconfig.html#posix-prefix
+        let scheme = {
+            let mut purelib = prefix.clone();
+            purelib.extend(["lib", &self.python_version().to_string(), "site-packages"]);
+
+            let platlib = purelib.clone();
+
+            let mut scripts = prefix.clone();
+            scripts.extend(["bin"]);
+
+            let data = prefix.clone();
+
+            let mut include = prefix.clone();
+            include.extend(["lib", "include", &self.python_version().to_string()]);
+
+            Scheme {
+                purelib,
+                platlib,
+                scripts,
+                data,
+                include,
+            }
+        };
+
+        Self {
+            base_exec_prefix: prefix.clone(),
+            base_prefix: prefix.clone(),
+            prefix,
+            scheme,
+            target: None,
+            ..self
+        }
+    }
+
     /// Returns the path to the Python virtual environment.
     #[inline]
     pub fn platform(&self) -> &Platform {
