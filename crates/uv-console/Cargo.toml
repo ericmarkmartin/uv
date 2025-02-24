@@ -12,3 +12,4 @@ workspace = true
 
 [dependencies]
 console = { workspace = true }
+windows-sys.workspace = true

@@ -1,6 +1,26 @@
 use console::{measure_text_width, style, Key, Term};
 use std::{cmp::Ordering, iter};
 
+#[cfg(windows)]
+fn set_treat_control_c_as_input(enable: bool) {
+    use windows_sys::Win32::System::Console::{
+        GetConsoleMode, GetStdHandle, SetConsoleMode, ENABLE_ECHO_INPUT, ENABLE_LINE_INPUT,
+        ENABLE_MOUSE_INPUT, ENABLE_PROCESSED_INPUT, ENABLE_WINDOW_INPUT, STD_INPUT_HANDLE,
+    };
+    unsafe {
+        let handle = GetStdHandle(STD_INPUT_HANDLE);
+        let mut mode = 0;
+        if GetConsoleMode(handle, &mut mode).as_bool() {
+            if enable {
+                mode &= !ENABLE_PROCESSED_INPUT;
+            } else {
+                mode |= ENABLE_PROCESSED_INPUT;
+            }
+            SetConsoleMode(handle, mode);
+        }
+    }
+}
+
 /// Prompt the user for confirmation in the given [`Term`].
 ///
 /// This is a slimmed-down version of `dialoguer::Confirm`, with the post-confirmation report
@@ -24,7 +44,14 @@ pub fn confirm(message: &str, term: &Term, default: bool) -> std::io::Result<boo
     // Match continuously on every keystroke, and do not wait for user to hit the
     // `Enter` key.
     let response = loop {
+        #[cfg(windows)]
+        set_treat_control_c_as_input(true);
+
         let input = term.read_key_raw()?;
+
+        #[cfg(windows)]
+        set_treat_control_c_as_input(false);
+
         match input {
             Key::Char('y' | 'Y') => break true,
             Key::Char('n' | 'N') => break false,

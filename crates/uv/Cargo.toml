@@ -100,6 +100,7 @@ version-ranges = { workspace = true }
 walkdir = { workspace = true }
 which = { workspace = true }
 zip = { workspace = true }
+windows-sys.workspace = true
 
 [target.'cfg(target_os = "windows")'.dependencies]
 self-replace = { workspace = true }

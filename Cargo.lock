@@ -4703,6 +4703,7 @@ dependencies = [
  "version-ranges",
  "walkdir",
  "which",
+ "windows-sys 0.59.0",
  "zip",
 ]
 
@@ -4989,6 +4990,7 @@ name = "uv-console"
 version = "0.0.1"
 dependencies = [
  "console",
+ "windows-sys 0.59.0",
 ]
 
 [[package]]
